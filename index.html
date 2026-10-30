@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI PAI Kelas IV - Menginjak Usia Baligh</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#10B981',
+                            greenDark: '#059669',
+                            blueLight: '#38BDF8',
+                            blue: '#0284C7',
+                            yellow: '#FBBF24',
+                            yellowDark: '#D97706',
+                            cream: '#FEF3C7',
+                            softPink: '#F472B6'
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        body: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #ecfdf5 100%);
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #38BDF8;
+            border-radius: 10px;
+        }
+
+        /* Pulse & Bounce Custom Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .btn-bounce:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+
+        /* Glassmorphism Card Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Custom Drag & Drop Styling */
+        .draggable {
+            cursor: grab;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .dropzone-hover {
+            background-color: #fef3c7 !important;
+            border-color: #f59e0b !important;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col justify-between min-h-screen overflow-x-hidden">
+
+    <!-- TOP HEADER / NAVBAR -->
+    <header class="bg-white/90 backdrop-blur border-b-4 border-brand-blueLight shadow-md sticky top-0 z-50 py-3 px-4 sm:px-8">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Brand Logo / Title -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('menu')">
+                <div class="w-12 h-12 bg-brand-yellow rounded-full flex items-center justify-center text-white text-2xl shadow-inner border-2 border-white">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-brand-blue leading-tight">MPI PAI SD</h1>
+                    <p class="text-xs text-slate-500 font-semibold">Kelas IV • Usia Baligh</p>
+                </div>
+            </div>
+
+            <!-- Audio & Navigation Header Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Sound Toggle Button -->
+                <button id="btn-audio" onclick="toggleAudio()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold p-2 sm:px-4 sm:py-2 rounded-full border-2 border-amber-400 flex items-center space-x-2 text-sm shadow transition">
+                    <i id="audio-icon" class="fa-solid fa-volume-high text-lg text-amber-600"></i>
+                    <span id="audio-text" class="hidden sm:inline">Musik: ON</span>
+                </button>
+                
+                <!-- Home Button (Hidden on Splash Page) -->
+                <button id="btn-home" onclick="navigateTo('menu')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-bold p-2 sm:px-4 sm:py-2 rounded-full border-2 border-emerald-600 flex items-center space-x-2 text-sm shadow transition btn-bounce">
+                    <i class="fa-solid fa-house text-lg"></i>
+                    <span class="hidden sm:inline">Menu Utama</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- 1. HALAMAN PEMBUKA (SPLASH SCREEN) -->
+        <section id="sec-splash" class="view-section text-center py-6 animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 max-w-3xl mx-auto border-b-8 border-brand-green">
+                <div class="inline-block bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-bold mb-4 border border-emerald-300">
+                    <i class="fa-solid fa-star text-amber-500 mr-1"></i> Media Pembelajaran Interaktif PAI & Budi Pekerti
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-blue mb-4 tracking-wide leading-tight">
+                    AYO BELAJAR MENGENAL<br><span class="text-brand-green">USIA BALIGH!</span>
+                </h1>
+                
+                <!-- SVG Vector Illustration Child Muslims -->
+                <div class="my-6 flex justify-center items-center space-x-6 animate-float">
+                    <svg class="w-36 h-36 sm:w-48 sm:h-48 drop-shadow-lg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Boy Muslim Character -->
+                        <circle cx="100" cy="100" r="90" fill="#E0F2FE"/>
+                        <path d="M100 130C120 130 135 145 135 165V180H65V165C65 145 80 130 100 130Z" fill="#10B981"/>
+                        <circle cx="100" cy="90" r="35" fill="#FDE047"/>
+                        <!-- Cap / Peci -->
+                        <path d="M70 75C70 60 83 50 100 50C117 50 130 60 130 75H70Z" fill="#0284C7"/>
+                        <!-- Face -->
+                        <circle cx="100" cy="95" r="28" fill="#FFEDD5"/>
+                        <circle cx="90" cy="92" r="3" fill="#1E293B"/>
+                        <circle cx="110" cy="92" r="3" fill="#1E293B"/>
+                        <path d="M93 105C93 105 97 110 100 110C103 110 107 105 107 105" stroke="#1E293B" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Blush -->
+                        <circle cx="85" cy="98" r="4" fill="#F472B6" opacity="0.6"/>
+                        <circle cx="115" cy="98" r="4" fill="#F472B6" opacity="0.6"/>
+                    </svg>
+
+                    <svg class="w-36 h-36 sm:w-48 sm:h-48 drop-shadow-lg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Girl Muslim Character (Hijab) -->
+                        <circle cx="100" cy="100" r="90" fill="#FCE7F3"/>
+                        <path d="M100 130C120 130 140 145 140 165V180H60V165C60 145 80 130 100 130Z" fill="#38BDF8"/>
+                        <!-- Hijab Frame -->
+                        <path d="M65 95C65 65 80 50 100 50C120 50 135 65 135 95C135 125 120 135 100 135C80 135 65 125 65 95Z" fill="#F472B6"/>
+                        <!-- Face -->
+                        <circle cx="100" cy="95" r="24" fill="#FFEDD5"/>
+                        <circle cx="90" cy="92" r="3" fill="#1E293B"/>
+                        <circle cx="110" cy="92" r="3" fill="#1E293B"/>
+                        <path d="M93 105C93 105 97 109 100 109C103 109 107 105 107 105" stroke="#1E293B" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Hijab Flower -->
+                        <circle cx="78" cy="72" r="6" fill="#FBBF24"/>
+                        <circle cx="85" cy="98" r="4" fill="#F472B6" opacity="0.6"/>
+                        <circle cx="115" cy="98" r="4" fill="#F472B6" opacity="0.6"/>
+                    </svg>
+                </div>
+
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 inline-block mb-6">
+                    <p class="text-xs sm:text-sm font-semibold text-amber-800">
+                        <i class="fa-solid fa-graduation-cap text-amber-600 mr-1"></i> Kurikulum Merdeka • Kelas IV Sekolah Dasar
+                    </p>
+                </div>
+
+                <div>
+                    <button onclick="startApp()" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-brand-green to-emerald-600 text-white font-extrabold text-xl rounded-full border-b-4 border-emerald-800 shadow-lg hover:brightness-110 btn-bounce flex items-center justify-center mx-auto space-x-3">
+                        <span>MULAI BELAJAR</span>
+                        <i class="fa-solid fa-circle-play text-2xl text-yellow-300"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MENU UTAMA -->
+        <section id="sec-menu" class="view-section hidden animate-fade-in">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-800">MENU UTAMA</h2>
+                <p class="text-slate-600 text-sm sm:text-base">Pilih menu pembelajaran yang ingin kamu pelajari hari ini!</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Card 1: Petunjuk -->
+                <div onclick="navigateTo('petunjuk')" class="glass-card rounded-2xl p-5 border-b-4 border-sky-400 hover:border-sky-500 cursor-pointer btn-bounce flex items-center space-x-4 transition">
+                    <div class="w-16 h-16 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-3xl shrink-0">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Petunjuk</h3>
+                        <p class="text-xs text-slate-500">Cara penggunaan aplikasi media pembelajaran.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Tujuan Pembelajaran -->
+                <div onclick="navigateTo('tujuan')" class="glass-card rounded-2xl p-5 border-b-4 border-indigo-400 hover:border-indigo-500 cursor-pointer btn-bounce flex items-center space-x-4 transition">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl shrink-0">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Tujuan</h3>
+                        <p class="text-xs text-slate-500">Target capaian belajar siswa kelas IV.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Materi Pembelajaran -->
+                <div onclick="navigateTo('materi')" class="glass-card rounded-2xl p-5 border-b-4 border-emerald-400 hover:border-emerald-500 cursor-pointer btn-bounce flex items-center space-x-4 transition">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl shrink-0">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Materi Belajar</h3>
+                        <p class="text-xs text-slate-500">Slide interaktif penjelasan usia baligh.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4: Video Pembelajaran -->
+                <div onclick="navigateTo('video')" class="glass-card rounded-2xl p-5 border-b-4 border-rose-400 hover:border-rose-500 cursor-pointer btn-bounce flex items-center space-x-4 transition">
+                    <div class="w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-3xl shrink-0">
+                        <i class="fa-solid fa-film"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Video Belajar</h3>
+                        <p class="text-xs text-slate-500">Tonton animasi penjelas materi baligh.</p>
+                    </div>
+                </div>
+
+                <!-- Card 5: Permainan Edukatif -->
+                <div onclick="navigateTo('games')" class="glass-card rounded-2xl p-5 border-b-4 border-amber-400 hover:border-amber-500 cursor-pointer btn-bounce flex items-center space-x-4 transition">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl shrink-0">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Gim Edukasi</h3>
+                        <p class="text-xs text-slate-500">Bermain sambil mengasah pengetahuan.</p>
+                    </div>
+                </div>
+
+                <!-- Card 6: Evaluasi -->
+                <div onclick="navigateTo('evaluasi')" class="glass-card rounded-2xl p-5 border-b-4 border-purple-400 hover:border-purple-500 cursor-pointer btn-bounce flex items-center space-x-4 transition">
+                    <div class="w-16 h-16 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-3xl shrink-0">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Evaluasi / Ujian</h3>
+                        <p class="text-xs text-slate-500">Latihan 10 soal pilihan ganda otomatis.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Developer Profile Button Card -->
+            <div class="mt-6 text-center">
+                <button onclick="navigateTo('profil')" class="bg-white/80 hover:bg-white text-slate-700 font-bold px-5 py-2.5 rounded-full border border-slate-300 shadow-sm text-sm inline-flex items-center space-x-2 btn-bounce">
+                    <i class="fa-solid fa-user-gear text-brand-blue"></i>
+                    <span>Profil Pengembang Media</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. PETUNJUK PENGGUNAAN -->
+        <section id="sec-petunjuk" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 border-b-8 border-sky-400">
+                <div class="flex items-center space-x-3 mb-6 pb-4 border-b">
+                    <i class="fa-solid fa-circle-info text-3xl text-sky-500"></i>
+                    <h2 class="text-2xl font-bold text-slate-800">Petunjuk Penggunaan Aplikasi</h2>
+                </div>
+
+                <div class="space-y-4 text-slate-700 text-sm sm:text-base">
+                    <div class="flex items-start space-x-3 bg-sky-50 p-3.5 rounded-xl border border-sky-100">
+                        <span class="w-7 h-7 bg-sky-500 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">1</span>
+                        <p>Gunakan tombol <strong>Musik ON/OFF</strong> di kanan atas layar untuk mengatur audio latar.</p>
+                    </div>
+                    <div class="flex items-start space-x-3 bg-sky-50 p-3.5 rounded-xl border border-sky-100">
+                        <span class="w-7 h-7 bg-sky-500 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">2</span>
+                        <p>Pilih menu <strong>Materi Pembelajaran</strong> untuk membaca topik materi secara berurutan.</p>
+                    </div>
+                    <div class="flex items-start space-x-3 bg-sky-50 p-3.5 rounded-xl border border-sky-100">
+                        <span class="w-7 h-7 bg-sky-500 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">3</span>
+                        <p>Gunakan tombol <strong>Lanjut</strong> dan <strong>Kembali</strong> di bagian bawah slide materi.</p>
+                    </div>
+                    <div class="flex items-start space-x-3 bg-sky-50 p-3.5 rounded-xl border border-sky-100">
+                        <span class="w-7 h-7 bg-sky-500 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">4</span>
+                        <p>Jawab kuis mini di akhir setiap materi untuk menguji pemahamanmu.</p>
+                    </div>
+                    <div class="flex items-start space-x-3 bg-sky-50 p-3.5 rounded-xl border border-sky-100">
+                        <span class="w-7 h-7 bg-sky-500 text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">5</span>
+                        <p>Cobalah <strong>Permainan Edukatif</strong> dan kerjakan tes di menu <strong>Evaluasi</strong> untuk memperoleh skor akhir.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-right">
+                    <button onclick="navigateTo('menu')" class="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow btn-bounce">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Menu
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. TUJUAN PEMBELAJARAN -->
+        <section id="sec-tujuan" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 border-b-8 border-indigo-400">
+                <div class="flex items-center space-x-3 mb-6 pb-4 border-b">
+                    <i class="fa-solid fa-bullseye text-3xl text-indigo-500"></i>
+                    <h2 class="text-2xl font-bold text-slate-800">Tujuan Pembelajaran</h2>
+                </div>
+
+                <p class="text-slate-600 mb-4 text-sm sm:text-base font-semibold">
+                    Setelah menggunakan media pembelajaran interaktif ini, kamu diharapkan mampu:
+                </p>
+
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="flex items-center space-x-3 bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100">
+                        <i class="fa-solid fa-circle-check text-indigo-500 text-xl shrink-0"></i>
+                        <span class="font-medium text-slate-700 text-sm sm:text-base">1. Menjelaskan pengertian baligh dengan bahasa yang sederhana.</span>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100">
+                        <i class="fa-solid fa-circle-check text-indigo-500 text-xl shrink-0"></i>
+                        <span class="font-medium text-slate-700 text-sm sm:text-base">2. Mengidentifikasi tanda-tanda baligh bagi laki-laki dan perempuan secara tepat.</span>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100">
+                        <i class="fa-solid fa-circle-check text-indigo-500 text-xl shrink-0"></i>
+                        <span class="font-medium text-slate-700 text-sm sm:text-base">3. Menjelaskan kewajiban agama seorang muslim setelah memasuki usia baligh.</span>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100">
+                        <i class="fa-solid fa-circle-check text-indigo-500 text-xl shrink-0"></i>
+                        <span class="font-medium text-slate-700 text-sm sm:text-base">4. Memahami pentingnya menjaga kebersihan, kesucian, dan kehormatan diri.</span>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-indigo-50 p-3.5 rounded-2xl border border-indigo-100">
+                        <i class="fa-solid fa-circle-check text-indigo-500 text-xl shrink-0"></i>
+                        <span class="font-medium text-slate-700 text-sm sm:text-base">5. Menunjukkan sikap bertanggung jawab dalam menjalankan kewajiban ibadah.</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-right">
+                    <button onclick="navigateTo('menu')" class="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow btn-bounce">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Menu
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. MATERI PEMBELAJARAN (SLIDE INTERAKTIF) -->
+        <section id="sec-materi" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-5 sm:p-8 border-b-8 border-emerald-500 relative">
+                <!-- Progress Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b gap-2">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-book-open text-2xl text-emerald-600"></i>
+                        <h2 class="text-xl font-bold text-slate-800" id="materi-title">Materi 1: Pengertian Baligh</h2>
+                    </div>
+                    <div class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-xs">
+                        Slide <span id="materi-slide-num">1</span> dari 4
+                    </div>
+                </div>
+
+                <!-- Slide Content Area -->
+                <div id="materi-content-area" class="min-h-[320px] flex flex-col justify-between">
+                    <!-- Dynamic Content Inserted Here by JS -->
+                </div>
+
+                <!-- Slide Navigation Control Buttons -->
+                <div class="mt-8 flex justify-between items-center pt-4 border-t">
+                    <button id="btn-prev-materi" onclick="changeMateriSlide(-1)" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition btn-bounce flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Sebelumnya</span>
+                    </button>
+                    <button id="btn-next-materi" onclick="changeMateriSlide(1)" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow transition btn-bounce flex items-center space-x-2">
+                        <span>Berikutnya</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. VIDEO PEMBELAJARAN -->
+        <section id="sec-video" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 border-b-8 border-rose-500">
+                <div class="flex items-center space-x-3 mb-6 pb-4 border-b">
+                    <i class="fa-solid fa-film text-3xl text-rose-500"></i>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Video Pembelajaran Baligh</h2>
+                        <p class="text-xs text-slate-500">Simak video animasi penjelasan menyambut usia baligh berikut ini.</p>
+                    </div>
+                </div>
+
+                <!-- Responsive Video Container -->
+                <div class="relative w-full rounded-2xl overflow-hidden shadow-lg border-4 border-white bg-black aspect-video mb-4">
+                    <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?si=educational" title="Video Pembelajaran Usia Baligh" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <div class="bg-rose-50 p-4 rounded-2xl border border-rose-100 text-slate-700 text-sm">
+                    <h3 class="font-bold text-rose-800 mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Deskripsi Ringkas:</h3>
+                    <p>Video ini menjelaskan perbedaan perubahan fisik antara anak laki-laki dan perempuan saat memasuki usia baligh, serta kewajiban ibadah yang mulai berlaku penuh.</p>
+                </div>
+
+                <div class="mt-6 text-right">
+                    <button onclick="navigateTo('menu')" class="px-6 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl shadow btn-bounce">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Menu
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. PERMAINAN EDUKATIF (3 MINI GAMES) -->
+        <section id="sec-games" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 border-b-8 border-amber-500">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-gamepad text-3xl text-amber-500"></i>
+                        <h2 class="text-2xl font-bold text-slate-800">Permainan Edukatif</h2>
+                    </div>
+                    <span id="game-score-badge" class="bg-amber-100 text-amber-800 font-extrabold px-4 py-1.5 rounded-full border border-amber-300 text-sm">
+                        <i class="fa-solid fa-trophy text-amber-500 mr-1"></i> Skor Game: <span id="game-score">0</span>
+                    </span>
+                </div>
+
+                <!-- Tab Navigation for Games -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="switchGameTab('tebak')" id="tab-game-tebak" class="game-tab-btn flex-1 py-2.5 px-4 rounded-xl font-bold text-sm bg-amber-500 text-white shadow">
+                        1. Tebak Jawaban
+                    </button>
+                    <button onclick="switchGameTab('jodoh')" id="tab-game-jodoh" class="game-tab-btn flex-1 py-2.5 px-4 rounded-xl font-bold text-sm bg-slate-200 text-slate-700">
+                        2. Cocokkan Pasangan
+                    </button>
+                    <button onclick="switchGameTab('tf')" id="tab-game-tf" class="game-tab-btn flex-1 py-2.5 px-4 rounded-xl font-bold text-sm bg-slate-200 text-slate-700">
+                        3. Benar / Salah
+                    </button>
+                </div>
+
+                <!-- Game Container 1: Tebak Jawaban -->
+                <div id="game-box-tebak" class="game-box space-y-4">
+                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-center">
+                        <span class="text-xs uppercase font-extrabold text-amber-700 tracking-wider">Pertanyaan Tebak Cepat</span>
+                        <h3 class="text-lg font-bold text-slate-800 mt-1" id="game-tebak-q">Seseorang yang telah memasuki usia baligh dinamakan...</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="game-tebak-opts">
+                        <!-- Options generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Game Container 2: Cocokkan Pasangan -->
+                <div id="game-box-jodoh" class="game-box hidden space-y-4">
+                    <p class="text-xs text-slate-500 text-center font-bold">Tarik/Klik Istilah di sebelah kiri lalu pasangkan dengan arti yang tepat di sebelah kanan!</p>
+                    <div id="match-game-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-3" id="match-left"></div>
+                        <div class="space-y-3" id="match-right"></div>
+                    </div>
+                </div>
+
+                <!-- Game Container 3: Benar atau Salah -->
+                <div id="game-box-tf" class="game-box hidden space-y-4">
+                    <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-200 text-center">
+                        <p class="text-xs font-bold text-indigo-600 uppercase mb-2">Pernyataan Evaluasi Singkat</p>
+                        <h3 class="text-xl font-bold text-slate-800" id="game-tf-q">Anak yang sudah baligh tidak wajib melaksanakan salat lima waktu.</h3>
+                    </div>
+                    <div class="flex justify-center space-x-4 pt-2">
+                        <button onclick="checkTFAnswer(true)" class="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-lg rounded-2xl shadow-lg btn-bounce flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-check"></i><span>BENAR</span>
+                        </button>
+                        <button onclick="checkTFAnswer(false)" class="px-8 py-3 bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-lg rounded-2xl shadow-lg btn-bounce flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-xmark"></i><span>SALAH</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between items-center pt-4 border-t">
+                    <button onclick="resetGameScore()" class="text-xs font-bold text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-rotate-right mr-1"></i>Reset Skor Game
+                    </button>
+                    <button onclick="navigateTo('menu')" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow btn-bounce">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Menu
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. EVALUASI PEMBELAJARAN (KUIS 10 SOAL) -->
+        <section id="sec-evaluasi" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-5 sm:p-8 border-b-8 border-purple-600">
+                <!-- Quiz Header -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-pen-to-square text-3xl text-purple-600"></i>
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Evaluasi Pembelajaran</h2>
+                            <p class="text-xs text-slate-500">Soal Pilihan Ganda (10 Nomor)</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-bold text-slate-400 block">Nomor</span>
+                        <span class="text-lg font-extrabold text-purple-600"><span id="eval-q-index">1</span>/10</span>
+                    </div>
+                </div>
+
+                <!-- Quiz Question Box -->
+                <div class="mb-6">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-4 bg-purple-50 p-4 rounded-2xl border border-purple-100" id="eval-question-text">
+                        Loading Soal...
+                    </h3>
+                    <div class="space-y-3" id="eval-options-container">
+                        <!-- Options injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Quiz Bottom Nav Controls -->
+                <div class="flex justify-between items-center pt-4 border-t">
+                    <button id="btn-eval-prev" onclick="changeEvalQuestion(-1)" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm btn-bounce">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Soal Sebelumnya
+                    </button>
+                    <button id="btn-eval-next" onclick="changeEvalQuestion(1)" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow text-sm btn-bounce">
+                        Lanjut <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. HALAMAN HASIL BELAJAR / RAPOR EVALUASI -->
+        <section id="sec-hasil" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 text-center border-b-8 border-brand-green">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-white shadow">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-1">HASIL EVALUASI BELAJAR</h2>
+                <p class="text-sm text-slate-500 mb-6">Pendidikan Agama Islam dan Budi Pekerti Kelas IV</p>
+
+                <!-- Student Identity Field -->
+                <div class="max-w-xs mx-auto mb-6">
+                    <label class="block text-xs font-bold text-slate-600 text-left mb-1">Nama Peserta Didik:</label>
+                    <input type="text" id="student-name-input" placeholder="Ketik Nama Kamu Di Sini..." class="w-full px-4 py-2 rounded-xl border-2 border-slate-300 focus:border-brand-green outline-none text-center font-bold text-slate-800">
+                </div>
+
+                <!-- Score Board Container -->
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-3xl border border-emerald-200 mb-6 max-w-md mx-auto shadow-inner">
+                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">NILAI AKHIR</span>
+                    <div class="text-6xl font-extrabold text-emerald-600 my-2" id="res-score">0</div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-emerald-200">
+                        <div class="bg-white p-3 rounded-xl border border-emerald-100">
+                            <span class="text-xs text-slate-400 block font-bold">Jawaban Benar</span>
+                            <span class="text-xl font-bold text-emerald-600" id="res-correct">0</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-rose-100">
+                            <span class="text-xs text-slate-400 block font-bold">Jawaban Salah</span>
+                            <span class="text-xl font-bold text-rose-500" id="res-wrong">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motivational Note -->
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 max-w-md mx-auto mb-8">
+                    <p class="text-sm font-bold text-amber-800" id="res-motivation-text">
+                        "Terus belajar dan jadilah anak yang soleh & solehah!"
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="repeatEvaluasi()" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-2xl shadow btn-bounce flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Ulangi Evaluasi</span>
+                    </button>
+                    <button onclick="navigateTo('materi')" class="px-6 py-3 bg-brand-blue hover:bg-sky-600 text-white font-extrabold rounded-2xl shadow btn-bounce flex items-center space-x-2">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Pelajari Lagi Materi</span>
+                    </button>
+                    <button onclick="navigateTo('menu')" class="px-6 py-3 bg-slate-700 hover:bg-slate-800 text-white font-extrabold rounded-2xl shadow btn-bounce flex items-center space-x-2">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Menu Utama</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. PROFIL PENGEMBANG -->
+        <section id="sec-profil" class="view-section hidden animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 border-b-8 border-slate-700">
+                <div class="flex items-center space-x-3 mb-6 pb-4 border-b">
+                    <i class="fa-solid fa-user-gear text-3xl text-slate-700"></i>
+                    <h2 class="text-2xl font-bold text-slate-800">Profil Pengembang Media</h2>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <div class="w-32 h-32 rounded-full bg-slate-200 border-4 border-white shadow-md flex items-center justify-center text-5xl text-slate-400 shrink-0">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+
+                    <div class="space-y-2 text-center sm:text-left text-slate-700 w-full">
+                        <div>
+                            <span class="text-xs text-slate-400 font-bold block">NAMA PENGEMBANG</span>
+                            <span class="text-lg font-extrabold text-slate-800">Guru PAI & Pekerti Kreatif</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-bold block">INSTANSI / SEKOLAH</span>
+                            <span class="text-sm font-semibold">SD Negeri Indonesia / FTIK UIN</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-bold block">PROGRAM STUDI</span>
+                            <span class="text-sm font-semibold">Pendidikan Agama Islam (PAI)</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-bold block">TAHUN PEMBUATAN</span>
+                            <span class="text-sm font-semibold">2026</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-right">
+                    <button onclick="navigateTo('menu')" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl shadow btn-bounce">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Menu
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white/80 border-t py-3 text-center text-xs text-slate-500 font-medium">
+        <p>© 2026 Media Pembelajaran Interaktif PAI SD Kelas IV • Usia Baligh</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. AUDIO SYNTHESIZER (Web Audio API - Direct HTML Built-in Sound Generator)
+           ========================================================================== */
+        let audioCtx = null;
+        let isAudioOn = true;
+        let bgmOsc = null;
+        let isBgmPlaying = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSoundEffect(type) {
+            if (!isAudioOn) return;
+            initAudio();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(110, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            }
+        }
+
+        function toggleAudio() {
+            isAudioOn = !isAudioOn;
+            const icon = document.getElementById('audio-icon');
+            const text = document.getElementById('audio-text');
+
+            if (isAudioOn) {
+                icon.className = "fa-solid fa-volume-high text-lg text-amber-600";
+                text.innerText = "Musik: ON";
+                playSoundEffect('click');
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-lg text-slate-400";
+                text.innerText = "Musik: OFF";
+            }
+        }
+
+        /* ==========================================================================
+           2. NAVIGATION SYSTEM
+           ========================================================================== */
+        function navigateTo(sectionId) {
+            playSoundEffect('click');
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(sec => sec.classList.add('hidden'));
+
+            const targetSection = document.getElementById('sec-' + sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+
+            // Header home button visibility
+            const btnHome = document.getElementById('btn-home');
+            if (sectionId === 'splash') {
+                btnHome.classList.add('hidden');
+            } else {
+                btnHome.classList.remove('hidden');
+            }
+
+            // Initialize dynamic contents if opening specific screens
+            if (sectionId === 'materi') renderMateriSlide();
+            if (sectionId === 'games') initGames();
+            if (sectionId === 'evaluasi') renderEvalQuestion();
+            if (sectionId === 'hasil') renderHasilScreen();
+        }
+
+        function startApp() {
+            initAudio();
+            navigateTo('menu');
+        }
+
+        /* ==========================================================================
+           3. MATERI PEMBELAJARAN DATA & LOGIC
+           ========================================================================== */
+        const materiData = [
+            {
+                title: "A. Pengertian Baligh",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shrink-0 mt-1">
+                                <i class="fa-solid fa-child"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-emerald-900 text-lg">Apa itu Baligh?</h3>
+                                <p class="text-slate-700 text-sm mt-1 leading-relaxed">
+                                    Secara bahasa, <strong>Baligh</strong> artinya <em>sampai</em> atau <em>cukup umur</em>. Secara istilah syariat Islam, baligh adalah kedewasaan seseorang yang menandakan bahwa ia telah dikenakan kewajiban agama (<strong>Mukallaf</strong>).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div class="bg-white p-3.5 rounded-xl border shadow-sm">
+                                <h4 class="font-bold text-brand-blue mb-1"><i class="fa-solid fa-user-check mr-1"></i> Mulai Bertanggung Jawab</h4>
+                                <p class="text-slate-600 text-xs">Pahala dan dosa atas perbuatan mulai dicatat secara mandiri oleh malaikat.</p>
+                            </div>
+                            <div class="bg-white p-3.5 rounded-xl border shadow-sm">
+                                <h4 class="font-bold text-brand-greenDark mb-1"><i class="fa-solid fa-heart-pulse mr-1"></i> Perubahan Fisik & Akal</h4>
+                                <p class="text-slate-600 text-xs">Tubuh dan pikiran berkembang menjadi lebih dewasa dan bijaksana.</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                quiz: {
+                    q: "Apa arti Baligh secara bahasa?",
+                    opts: ["A. Anak-anak", "B. Sampai / Cukup Umur", "C. Orang Tua", "D. Sekolah"],
+                    ans: 1
+                }
+            },
+            {
+                title: "B. Tanda-Tanda Baligh",
+                content: `
+                    <div class="space-y-4">
+                        <p class="text-sm text-slate-600">Seseorang dikatakan telah baligh apabila mengalami salah satu dari tanda-tanda berikut:</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 text-center">
+                                <div class="w-10 h-10 bg-sky-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-lg">
+                                    <i class="fa-solid fa-mars"></i>
+                                </div>
+                                <h4 class="font-bold text-sky-900 text-sm">Mimpi Basah</h4>
+                                <p class="text-xs text-slate-600 mt-1">Tanda utama baligh bagi laki-laki (Ihtilam).</p>
+                            </div>
+
+                            <div class="bg-pink-50 p-4 rounded-2xl border border-pink-200 text-center">
+                                <div class="w-10 h-10 bg-pink-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-lg">
+                                    <i class="fa-solid fa-venus"></i>
+                                </div>
+                                <h4 class="font-bold text-pink-900 text-sm">Mengalami Haid</h4>
+                                <p class="text-xs text-slate-600 mt-1">Tanda utama baligh bagi perempuan (Menstruasi).</p>
+                            </div>
+
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-center">
+                                <div class="w-10 h-10 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-lg">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
+                                <h4 class="font-bold text-amber-900 text-sm">Usia 15 Tahun</h4>
+                                <p class="text-xs text-slate-600 mt-1">Bila tanda di atas belum terjadi (Tahun Hijriah).</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                quiz: {
+                    q: "Tanda baligh bagi anak perempuan adalah...",
+                    opts: ["A. Suara membesar", "B. Tumbuh kumis", "C. Mengalami Haid", "D. Bertambah tinggi"],
+                    ans: 2
+                }
+            },
+            {
+                title: "C. Kewajiban Setelah Baligh",
+                content: `
+                    <div class="space-y-3">
+                        <p class="text-sm font-semibold text-slate-700">Setelah baligh, seorang muslim wajib melaksanakan amalan ibadah berikut:</p>
+
+                        <div class="space-y-2">
+                            <div class="flex items-center p-3 bg-white rounded-xl border border-slate-200 space-x-3 shadow-sm">
+                                <i class="fa-solid fa-kaaba text-emerald-600 text-xl"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-800">Salat Lima Waktu</h4>
+                                    <p class="text-xs text-slate-500">Wajib dilaksanakan setiap hari dan tidak boleh ditinggalkan.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-white rounded-xl border border-slate-200 space-x-3 shadow-sm">
+                                <i class="fa-solid fa-moon text-amber-500 text-xl"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-800">Puasa Ramadan</h4>
+                                    <p class="text-xs text-slate-500">Menahan diri dari lapar, dahaga, dan hawa nafsu dari terbit fajar hingga maghrib.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center p-3 bg-white rounded-xl border border-slate-200 space-x-3 shadow-sm">
+                                <i class="fa-solid fa-shirt text-sky-500 text-xl"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-800">Menutup Aurat</h4>
+                                    <p class="text-xs text-slate-500">Berpakaian sopan dan menutup batasan aurat sesuai ajaran Islam.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                quiz: {
+                    q: "Ibadah yang wajib dilakukan setiap hari setelah baligh adalah...",
+                    opts: ["A. Salat 5 Waktu", "B. Naik Haji", "C. Sedekah Banyak", "D. Umroh"],
+                    ans: 0
+                }
+            },
+            {
+                title: "D. Menjaga Kebersihan & Kesucian",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-200 text-slate-700 text-sm">
+                            <h4 class="font-bold text-indigo-900 mb-1"><i class="fa-solid fa-shower mr-1"></i> Mandi Wajib (Mandi Janabah)</h4>
+                            <p class="text-xs leading-relaxed">
+                                Setelah mengalami mimpi basah atau selesai masa haid, seorang muslim wajib melakukan <strong>Mandi Wajib</strong> untuk menyucikan diri dari hadas besar sebelum melaksanakan ibadah salat.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                                <h4 class="font-bold text-emerald-800 text-xs mb-1">1. Menjaga Kebersihan Badan</h4>
+                                <p class="text-xs text-slate-600">Rajin mandi, berganti pakaian bersih, dan menjaga aroma tubuh.</p>
+                            </div>
+                            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
+                                <h4 class="font-bold text-amber-800 text-xs mb-1">2. Menjaga Kehormatan Diri</h4>
+                                <p class="text-xs text-slate-600">Menjaga pergaulan yang santun dan bijak antar sesama teman.</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                quiz: {
+                    q: "Untuk menyucikan diri dari hadas besar, kita melakukan...",
+                    opts: ["A. Wudu saja", "B. Cuci tangan", "C. Mandi Wajib", "D. Ganti baju"],
+                    ans: 2
+                }
+            }
+        ];
+
+        let currentMateriIdx = 0;
+
+        function renderMateriSlide() {
+            const data = materiData[currentMateriIdx];
+            document.getElementById('materi-title').innerText = data.title;
+            document.getElementById('materi-slide-num').innerText = currentMateriIdx + 1;
+
+            const area = document.getElementById('materi-content-area');
+            area.innerHTML = `
+                <div>${data.content}</div>
+                
+                <!-- Quick Quiz Box -->
+                <div class="mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <span class="text-xs font-bold text-amber-600 uppercase tracking-wide block mb-1">
+                        <i class="fa-solid fa-lightbulb mr-1"></i> Mini Kuis Cepat:
+                    </span>
+                    <p class="font-bold text-sm text-slate-800 mb-3">${data.quiz.q}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="materi-mini-opts">
+                        ${data.quiz.opts.map((opt, i) => `
+                            <button onclick="checkMateriMiniQuiz(${i}, ${data.quiz.ans})" class="text-left px-3 py-2 bg-white hover:bg-slate-100 rounded-xl border text-xs font-semibold text-slate-700 transition">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="materi-mini-feedback" class="mt-2 text-xs font-bold hidden"></div>
+                </div>
+            `;
+
+            // Update buttons
+            document.getElementById('btn-prev-materi').style.visibility = currentMateriIdx === 0 ? 'hidden' : 'visible';
+            const btnNext = document.getElementById('btn-next-materi');
+            if (currentMateriIdx === materiData.length - 1) {
+                btnNext.innerHTML = `<span>Ke Evaluasi</span> <i class="fa-solid fa-pen-to-square"></i>`;
+            } else {
+                btnNext.innerHTML = `<span>Berikutnya</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        }
+
+        function changeMateriSlide(dir) {
+            if (currentMateriIdx + dir >= 0 && currentMateriIdx + dir < materiData.length) {
+                currentMateriIdx += dir;
+                renderMateriSlide();
+            } else if (currentMateriIdx + dir === materiData.length) {
+                navigateTo('evaluasi');
+            }
+        }
+
+        function checkMateriMiniQuiz(selected, correct) {
+            const fb = document.getElementById('materi-mini-feedback');
+            fb.classList.remove('hidden', 'text-emerald-600', 'text-rose-500');
+            if (selected === correct) {
+                playSoundEffect('correct');
+                fb.classList.add('text-emerald-600');
+                fb.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Benar sekali! Jawabanmu tepat.`;
+            } else {
+                playSoundEffect('wrong');
+                fb.classList.add('text-rose-500');
+                fb.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Belum tepat. Coba lagi ya!`;
+            }
+        }
+
+        /* ==========================================================================
+           4. GAMES EDUKATIF LOGIC
+           ========================================================================== */
+        let gameScore = 0;
+
+        function initGames() {
+            renderTebakGame();
+            renderMatchGame();
+            renderTFGame();
+        }
+
+        function addGameScore(pts) {
+            gameScore += pts;
+            document.getElementById('game-score').innerText = gameScore;
+        }
+
+        function resetGameScore() {
+            gameScore = 0;
+            document.getElementById('game-score').innerText = 0;
+            playSoundEffect('click');
+            initGames();
+        }
+
+        function switchGameTab(tabName) {
+            playSoundEffect('click');
+            document.querySelectorAll('.game-box').forEach(b => b.classList.add('hidden'));
+            document.querySelectorAll('.game-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-white', 'shadow');
+                btn.classList.add('bg-slate-200', 'text-slate-700');
+            });
+
+            document.getElementById('game-box-' + tabName).classList.remove('hidden');
+            const activeBtn = document.getElementById('tab-game-' + tabName);
+            activeBtn.classList.remove('bg-slate-200', 'text-slate-700');
+            activeBtn.classList.add('bg-amber-500', 'text-white', 'shadow');
+        }
+
+        // Game 1: Tebak Jawaban
+        const tebakData = [
+            { q: "Seseorang yang telah memasuki usia baligh dinamakan...", opts: ["Mukallaf", "Muazin", "Makmum", "Musafir"], ans: 0 },
+            { q: "Tanda baligh laki-laki menurut fikih Islam adalah...", opts: ["Haid", "Mimpi Basah", "Suara Kecil", "Lapar"], ans: 1 }
+        ];
+        let tebakIdx = 0;
+
+        function renderTebakGame() {
+            const data = tebakData[tebakIdx];
+            document.getElementById('game-tebak-q').innerText = data.q;
+            const container = document.getElementById('game-tebak-opts');
+            container.innerHTML = data.opts.map((opt, i) => `
+                <button onclick="answerTebak(${i})" class="p-3 bg-white hover:bg-amber-100 rounded-xl border border-amber-200 font-bold text-sm text-slate-700 shadow-sm transition btn-bounce">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function answerTebak(idx) {
+            if (idx === tebakData[tebakIdx].ans) {
+                playSoundEffect('correct');
+                addGameScore(10);
+                alert("🎉 Benar! Skor kamu bertambah +10");
+                tebakIdx = (tebakIdx + 1) % tebakData.length;
+                renderTebakGame();
+            } else {
+                playSoundEffect('wrong');
+                alert("❌ Masih kurang tepat, coba lagi ya!");
+            }
+        }
+
+        // Game 2: Cocokkan Pasangan
+        const matchLeftData = [
+            { id: 1, text: "Baligh" },
+            { id: 2, text: "Haid" },
+            { id: 3, text: "Mimpi Basah" },
+            { id: 4, text: "Salat" }
+        ];
+        const matchRightData = [
+            { matchId: 2, text: "Tanda baligh anak perempuan" },
+            { matchId: 1, text: "Cukup umur / kewajiban agama" },
+            { matchId: 4, text: "Kewajiban ibadah umat Islam" },
+            { matchId: 3, text: "Tanda baligh anak laki-laki" }
+        ];
+        let selectedLeftId = null;
+
+        function renderMatchGame() {
+            const leftCol = document.getElementById('match-left');
+            const rightCol = document.getElementById('match-right');
+
+            leftCol.innerHTML = matchLeftData.map(item => `
+                <div id="match-left-${item.id}" onclick="selectMatchLeft(${item.id})" class="p-3 bg-white hover:bg-amber-50 rounded-xl border-2 border-slate-200 cursor-pointer text-sm font-bold text-slate-700 flex justify-between items-center">
+                    <span>${item.text}</span>
+                    <i class="fa-solid fa-circle-dot text-slate-300"></i>
+                </div>
+            `).join('');
+
+            rightCol.innerHTML = matchRightData.map(item => `
+                <div onclick="selectMatchRight(${item.matchId})" class="p-3 bg-white hover:bg-sky-50 rounded-xl border-2 border-slate-200 cursor-pointer text-sm font-semibold text-slate-700">
+                    ${item.text}
+                </div>
+            `).join('');
+        }
+
+        function selectMatchLeft(id) {
+            playSoundEffect('click');
+            selectedLeftId = id;
+            matchLeftData.forEach(item => {
+                const el = document.getElementById(`match-left-${item.id}`);
+                if (item.id === id) {
+                    el.className = "p-3 bg-amber-100 rounded-xl border-2 border-amber-500 cursor-pointer text-sm font-bold text-amber-900 flex justify-between items-center";
+                } else {
+                    el.className = "p-3 bg-white rounded-xl border-2 border-slate-200 cursor-pointer text-sm font-bold text-slate-700 flex justify-between items-center";
+                }
+            });
+        }
+
+        function selectMatchRight(matchId) {
+            if (!selectedLeftId) {
+                alert("Klik dulu istilah di kolom sebelah kiri!");
+                return;
+            }
+
+            if (selectedLeftId === matchId) {
+                playSoundEffect('correct');
+                addGameScore(15);
+                alert("✨ Pasangan Tepat! +15 Poin");
+                selectedLeftId = null;
+                renderMatchGame();
+            } else {
+                playSoundEffect('wrong');
+                alert("❌ Pasangan belum cocok. Coba pilih lagi!");
+            }
+        }
+
+        // Game 3: Benar / Salah
+        const tfData = [
+            { q: "Anak yang sudah baligh tidak wajib melaksanakan salat lima waktu.", ans: false },
+            { q: "Mandi wajib dilakukan setelah bersuci dari hadas besar.", ans: true },
+            { q: "Umur 15 tahun Hijriah menjadi batas baligh jika belum ada tanda lainnya.", ans: true }
+        ];
+        let tfIdx = 0;
+
+        function renderTFGame() {
+            document.getElementById('game-tf-q').innerText = tfData[tfIdx].q;
+        }
+
+        function checkTFAnswer(userAns) {
+            if (userAns === tfData[tfIdx].ans) {
+                playSoundEffect('correct');
+                addGameScore(10);
+                alert("👍 Hebat! Jawabanmu Benar (+10 Poin)");
+            } else {
+                playSoundEffect('wrong');
+                alert("❌ Jawabanmu Salah. Pelajari lagi materinya ya!");
+            }
+            tfIdx = (tfIdx + 1) % tfData.length;
+            renderTFGame();
+        }
+
+        /* ==========================================================================
+           5. EVALUASI PEMBELAJARAN (10 SOAL EVALUASI)
+           ========================================================================== */
+        const evalQuestions = [
+            {
+                q: " Secarak bahasa, kata 'baligh' memiliki arti...",
+                opts: ["A. Anak-anak", "B. Sampai atau cukup umur", "C. Orang tua", "D. Remaja cerdas"],
+                ans: 1,
+                reason: "Baligh secara bahasa berasal dari kata berakar Bahasa Arab yang berarti sampai atau cukup umur."
+            },
+            {
+                q: "Seseorang yang telah baligh dan mulai dibebani kewajiban agama disebut...",
+                opts: ["A. Musafir", "B. Munafik", "C. Mukallaf", "D. Mualaf"],
+                ans: 2,
+                reason: "Mukallaf adalah sebutan bagi orang muslim yang telah baligh dan berakal sehingga wajib menjalankan syariat."
+            },
+            {
+                q: "Berikut ini yang merupakan tanda baligh bagi anak laki-laki adalah...",
+                opts: ["A. Haid", "B. Suara menjadi lebih tinggi", "C. Mimpi basah", "D. Mengalami pusing"],
+                ans: 2,
+                reason: "Mimpi basah (Ihtilam) merupakan tanda biologis utama baligh bagi anak laki-laki."
+            },
+            {
+                q: "Tanda biologis baligh bagi seorang anak perempuan adalah...",
+                opts: ["A. Mengalami Haid", "B. Tumbuh kumis", "C. Suara membesar", "D. Rambut rontok"],
+                ans: 0,
+                reason: "Haid (menstruasi) adalah tanda alami usia baligh bagi anak perempuan."
+            },
+            {
+                q: "Apabila seorang anak belum mengalami mimpi basah atau haid, ia dianggap baligh saat berusia...",
+                opts: ["A. 10 Tahun", "B. 12 Tahun", "C. 15 Tahun (Hijriah)", "D. 20 Tahun"],
+                ans: 2,
+                reason: "Batas usia maksimal penentuan baligh dalam syariat Islam adalah 15 tahun Hijriah."
+            },
+            {
+                q: "Ibadah wajib sehari-hari yang tidak boleh ditinggalkan setelah baligh adalah...",
+                opts: ["A. Salat 5 Waktu", "B. Umroh", "C. Sedekah", "D. Qurban"],
+                ans: 0,
+                reason: "Salat lima waktu adalah tiang agama yang wajib didirikan setiap hari oleh muslim baligh."
+            },
+            {
+                q: "Cara bersuci yang wajib dilakukan setelah berhadas besar (mimpi basah/haid) adalah...",
+                opts: ["A. Wudu saja", "B. Cuci muka", "C. Mandi Wajib", "D. Sikat gigi"],
+                ans: 2,
+                reason: "Mandi wajib menyucikan seluruh tubuh dari hadas besar agar sah dalam beribadah."
+            },
+            {
+                q: "Menutup aurat bagi muslim yang telah baligh hukumnya adalah...",
+                opts: ["A. Sunnah", "B. Wajib", "C. Makruh", "D. Mubah"],
+                ans: 1,
+                reason: "Menutup aurat adalah kewajiban yang harus ditaati setelah memasuki usia baligh."
+            },
+            {
+                q: "Bagaimana sikap tanggung jawab anak yang sudah baligh ketika melakukan kesalahan?",
+                opts: ["A. Menyalahkan teman", "B. Berbohong", "C. Meminta maaf dan bertobat", "D. Pura-pura tidak tahu"],
+                ans: 2,
+                reason: "Anak baligh harus bertanggung jawab atas perbuatannya dengan meminta maaf dan bertobat."
+            },
+            {
+                q: "Pentingnya menjaga kebersihan dan kehormatan diri setelah baligh bertujuan untuk...",
+                opts: ["A. Dipuji teman", "B. Menjaga kesucian diri dan kesehatan", "C. Pamer pakaian baru", "D. Mendapat hadiah"],
+                ans: 1,
+                reason: "Islam menyukai kebersihan dan kesucian baik lahiriah maupun batiniah."
+            }
+        ];
+
+        let userAnswers = Array(10).fill(null);
+        let currentEvalIdx = 0;
+
+        function renderEvalQuestion() {
+            const data = evalQuestions[currentEvalIdx];
+            document.getElementById('eval-q-index').innerText = currentEvalIdx + 1;
+            document.getElementById('eval-question-text').innerText = `${currentEvalIdx + 1}. ${data.q}`;
+
+            const container = document.getElementById('eval-options-container');
+            container.innerHTML = data.opts.map((opt, i) => {
+                const isSelected = userAnswers[currentEvalIdx] === i;
+                return `
+                    <button onclick="selectEvalOption(${i})" class="w-full text-left p-4 rounded-2xl border-2 transition font-semibold text-sm flex items-center justify-between ${
+                        isSelected 
+                        ? 'bg-purple-100 border-purple-600 text-purple-900 shadow-sm' 
+                        : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
+                    }">
+                        <span>${opt}</span>
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-purple-600 text-lg"></i>' : '<i class="fa-regular fa-circle text-slate-300"></i>'}
+                    </button>
+                `;
+            }).join('');
+
+            // Controls
+            document.getElementById('btn-eval-prev').style.visibility = currentEvalIdx === 0 ? 'hidden' : 'visible';
+            const btnNext = document.getElementById('btn-eval-next');
+            if (currentEvalIdx === evalQuestions.length - 1) {
+                btnNext.innerHTML = `Selesai & Lihat Hasil <i class="fa-solid fa-circle-check ml-1"></i>`;
+                btnNext.className = "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow text-sm btn-bounce";
+            } else {
+                btnNext.innerHTML = `Lanjut <i class="fa-solid fa-arrow-right ml-1"></i>`;
+                btnNext.className = "px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow text-sm btn-bounce";
+            }
+        }
+
+        function selectEvalOption(optIdx) {
+            playSoundEffect('click');
+            userAnswers[currentEvalIdx] = optIdx;
+            renderEvalQuestion();
+        }
+
+        function changeEvalQuestion(dir) {
+            if (currentEvalIdx + dir >= 0 && currentEvalIdx + dir < evalQuestions.length) {
+                currentEvalIdx += dir;
+                renderEvalQuestion();
+            } else if (currentEvalIdx + dir === evalQuestions.length) {
+                // Check if all answered
+                if (userAnswers.includes(null)) {
+                    if (!confirm("Masih ada soal yang belum dijawab. Yakin ingin menyelesaikan?")) {
+                        return;
+                    }
+                }
+                navigateTo('hasil');
+            }
+        }
+
+        function repeatEvaluasi() {
+            userAnswers = Array(10).fill(null);
+            currentEvalIdx = 0;
+            navigateTo('evaluasi');
+        }
+
+        /* ==========================================================================
+           6. RESULT & REPORT LOGIC
+           ========================================================================== */
+        function renderHasilScreen() {
+            let correctCount = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === evalQuestions[i].ans) {
+                    correctCount++;
+                }
+            });
+
+            const wrongCount = 10 - correctCount;
+            const finalScore = (correctCount / 10) * 100;
+
+            document.getElementById('res-score').innerText = finalScore;
+            document.getElementById('res-correct').innerText = correctCount;
+            document.getElementById('res-wrong').innerText = wrongCount;
+
+            const noteEl = document.getElementById('res-motivation-text');
+            if (finalScore >= 80) {
+                noteEl.innerText = "🌟 Masya Allah! Luar biasa! Pemahamanmu tentang usia baligh sangat baik. Pertahankan ya!";
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else if (finalScore >= 60) {
+                noteEl.innerText = "👍 Bagus! Kamu sudah memahami sebagian besar materi baligh. Pelajari lagi bagian yang keliru ya!";
+            } else {
+                noteEl.innerText = "💪 Jangan berkecil hati! Yuk ulangi lagi membaca materi pembelajaran agar nilai kamu makin bagus!";
+            }
+        }
+
+        // Initialize default view
+        window.onload = function() {
+            navigateTo('splash');
+        };
+    </script>
+</body>
+</html>
